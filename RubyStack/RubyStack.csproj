@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{116A1866-7163-468C-ADB2-7BC436FF7789}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>RubyStack</RootNamespace>
+    <AssemblyName>RubyStackLib</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Processes\CheckExitCode.cs" />
+    <Compile Include="Processes\IProcessRunner.cs" />
+    <Compile Include="Processes\CommandOutput.cs" />
+    <Compile Include="Processes\ProcessResult.cs" />
+    <Compile Include="Processes\ProcessRunner.cs" />
+    <Compile Include="Processes\RunningProcess.cs" />
+    <Compile Include="Ruby\CommandBuilder.cs" />
+    <Compile Include="Ruby\IReturn.cs" />
+    <Compile Include="Ruby\IRubyExpressionResult.cs" />
+    <Compile Include="Ruby\RubyEngine.cs" />
+    <Compile Include="Ruby\OrderAttribute.cs" />
+    <Compile Include="Ruby\RubyExpressionAttribute.cs" />
+    <Compile Include="Extensions\ReflectionExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Processes\" />
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>
