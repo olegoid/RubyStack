@@ -1,0 +1,17 @@
+*.stamp
+bin
+obj
+Newtonsoft.Json.*
+NUnit.*
+Xamarin.UITest*
+Xamarin.TestCloud.Agent.*
+MonoGame.Framework.*
+Zlib.Portable*
+FSharp.Data.*
+CocosSharp.PCL*
+*.userprefs
+packages
+*.DS_Store
+*.lock.json
+*.nuget.props
+*.nuget.targets
