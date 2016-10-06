@@ -24,7 +24,7 @@ namespace RubyStack
 			var commands = expressionsAndCommands.Values.ToList ();
 			commands.Add ("exit");
 
-			ProcessResult processResult = processRunner.Run ("irb", stdinCommands: commands.ToArray ());
+			ProcessResult processResult = processRunner.Run ("/usr/bin/irb", stdinCommands: commands.ToArray ());
 
 			var results = new Dictionary<IReturn, IRubyExpressionResult> ();
 
