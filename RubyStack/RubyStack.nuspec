@@ -14,4 +14,7 @@
     <copyright>Copyright 2016 Oleg Demchenko</copyright>
     <tags>Ruby C# .NET</tags>
   </metadata>
+  <files>
+    <file src="Ruby\**\*.cs" target="src" />
+  </files>
 </package>

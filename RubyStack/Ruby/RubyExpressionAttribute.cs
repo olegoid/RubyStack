@@ -9,6 +9,9 @@ namespace RubyStack
 
 		public RubyExpressionAttribute (string expression)
 		{
+			if (string.IsNullOrEmpty (expression))
+				throw new ArgumentNullException (nameof (expression));
+
 			Expression = expression;
 		}
 	}
