@@ -35,13 +35,13 @@
     <Compile Include="CommandBuilderTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\RubyStack\RubyStack.csproj">
       <Project>{116A1866-7163-468C-ADB2-7BC436FF7789}</Project>
       <Name>RubyStack</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

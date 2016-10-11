@@ -9,11 +9,9 @@
     <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
     <projectUrl>https://github.com/olegoid/RubyStack</projectUrl>
     <description>Wrap calls to Ruby scripts with C#</description>
-    <releaseNotes>$version$
-        * First release</releaseNotes>
     <copyright>Copyright 2016</copyright>
   </metadata>
   <files>
-      <file src=“RubyStack.dll" target="lib" />
+      <file src="RubyStack.dll" target="lib" />
   </files>
 </package>
