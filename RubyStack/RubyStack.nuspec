@@ -1,22 +1,16 @@
-<?xml version="1.0"?>
-<package >
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>RubyStack</id>
     <version>$version$</version>
     <authors>Oleg Demchenko</authors>
     <owners>Oleg Demchenko</owners>
-    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
-    <projectUrl>https://github.com/xamarin/QualityAssurance</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>https://github.com/olegoid/RubyStack</projectUrl>
     <description>Wrap calls to Ruby scripts with C#</description>
-    <releaseNotes>
-        1.0.1
-        * First release
-    </releaseNotes>
+    <releaseNotes>$version$
+        * First release</releaseNotes>
     <copyright>Copyright 2016</copyright>
-    <dependencies/>
   </metadata>
-  <files>
-      <file src="RubyStack.dll" target="lib" />
-  </files>
 </package>
