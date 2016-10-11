@@ -13,4 +13,7 @@
         * First release</releaseNotes>
     <copyright>Copyright 2016</copyright>
   </metadata>
+  <files>
+      <file src=“RubyStack.dll" target="lib" />
+  </files>
 </package>
