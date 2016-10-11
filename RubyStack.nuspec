@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>RubyStack</id>
+    <version>$version$</version>
+    <authors>Oleg Demchenko</authors>
+    <owners>Oleg Demchenko</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</licenseUrl>
+    <projectUrl>https://github.com/xamarin/QualityAssurance</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Wrap calls to Ruby scripts with C#</description>
+    <releaseNotes>
+        1.0.1
+        * First release
+    </releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <dependencies/>
+  </metadata>
+  <files>
+      <file src="RubyStack.dll" target="lib" />
+  </files>
+</package>
