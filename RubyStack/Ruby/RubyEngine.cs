@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RubyStack
 {
@@ -16,6 +17,12 @@ namespace RubyStack
 		public IRubyExpressionResult Run (IReturn expression)
 		{
 			return Run (new [] { expression }).FirstOrDefault ().Value;
+		}
+
+		public async Task<Dictionary<IReturn, IRubyExpressionResult>> RunAsync (IEnumerable<IReturn> expressions)
+		{
+			var task = Task.Run (() => Run (expressions));
+			return await task;
 		}
 
 		public Dictionary<IReturn, IRubyExpressionResult> Run (IEnumerable<IReturn> expressions)
