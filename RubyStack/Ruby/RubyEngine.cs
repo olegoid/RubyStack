@@ -23,7 +23,7 @@ namespace RubyStack
 			StartEngine (pathToExecEngine);
 		}
 
-		public async Task<IRubyExpressionResult> Run (IReturn expression)
+		public async Task<T> Run<T> (IReturn expression) where T : IRubyExpressionResult
 		{
 			try {
 				var taskCompletionSource = new TaskCompletionSource<IRubyExpressionResult> ();
@@ -38,9 +38,9 @@ namespace RubyStack
 					}
 				}, TaskCreationOptions.AttachedToParent);
 
-				return await Task.FromResult (task.Result);
+				return await Task.FromResult ((T)task.Result);
 			} catch {
-				return null;
+				return default (T);
 			}
 		}
 
