@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,57 +9,105 @@ namespace RubyStack
 {
 	public class RubyEngine
 	{
-		readonly ProcessRunner processRunner;
+		readonly List<Tuple<IReturn, string, Action<IRubyExpressionResult>>> commandsQueue;
 
-		public RubyEngine ()
+		Process irbProcess;
+		IReturn activeCommand;
+
+		public RubyEngine (string pathToExecEngine = "")
 		{
-			processRunner = new ProcessRunner ();
+			if (string.IsNullOrEmpty (pathToExecEngine))
+				pathToExecEngine = "/usr/bin/irb";
+
+			commandsQueue = new List<Tuple<IReturn, string, Action<IRubyExpressionResult>>> ();
+			StartEngine (pathToExecEngine);
 		}
 
-		public IRubyExpressionResult Run (IReturn expression)
+		public async Task<IRubyExpressionResult> Run (IReturn expression)
 		{
-			return Run (new [] { expression }).FirstOrDefault ().Value;
+			try {
+				var taskCompletionSource = new TaskCompletionSource<IRubyExpressionResult> ();
+				var task = taskCompletionSource.Task;
+				Action<IRubyExpressionResult> callback = taskCompletionSource.SetResult;
+
+				await Task.Factory.StartNew (() => {
+					try {
+						Run (expression, callback);
+					} catch (Exception exception) {
+						taskCompletionSource.SetException (exception);
+					}
+				}, TaskCreationOptions.AttachedToParent);
+
+				return await Task.FromResult (task.Result);
+			} catch {
+				return null;
+			}
 		}
 
-		public async Task<Dictionary<IReturn, IRubyExpressionResult>> RunAsync (IEnumerable<IReturn> expressions)
+		void Run (IReturn expression, Action<IRubyExpressionResult> callback)
 		{
-			var task = Task.Run (() => Run (expressions));
-			return await task;
+			var command = CommandBuilder.BuildCommandForExpression (expression);
+			commandsQueue.Add (new Tuple<IReturn, string, Action<IRubyExpressionResult>> (expression, command, callback));
+
+			using (StreamWriter sw = irbProcess.StandardInput) {
+				if (sw.BaseStream.CanWrite)
+					sw.WriteLine (command);
+			}
 		}
 
-		public Dictionary<IReturn, IRubyExpressionResult> Run (IEnumerable<IReturn> expressions)
+		void StartEngine (string pathToExecEngine)
 		{
-			var expressionsAndCommands = CommandBuilder.BuildCommandsForExpressions (expressions);
-			var commands = expressionsAndCommands.Values.ToList ();
-			commands.Add ("exit");
+			var startInfo = new ProcessStartInfo (pathToExecEngine) {
+				RedirectStandardOutput = true,
+				RedirectStandardError = true,
+				RedirectStandardInput = true,
+				UseShellExecute = false
+			};
 
-			ProcessResult processResult = processRunner.Run ("/usr/bin/irb", stdinCommands: commands.ToArray ());
+			irbProcess = new Process {
+				StartInfo = startInfo
+			};
 
-			var results = new Dictionary<IReturn, IRubyExpressionResult> ();
+			irbProcess.Start ();
+			irbProcess.OutputDataReceived += OnOutputDataReceived;
 
-			for (int i = 0; i < processResult.Output.Length; i++) {
-				var exprAndCmd = expressionsAndCommands.FirstOrDefault (c => c.Value == processResult.Output[i].Data);
-				var expr = exprAndCmd.Key;
+			irbProcess.BeginErrorReadLine ();
+			irbProcess.BeginOutputReadLine ();
+		}
 
-				if (expr == null)
-					continue;
+		public void Terminate ()
+		{
+			irbProcess.Kill ();
+		}
 
-				var returnable = expr.GetType ().GetTypeWithGenericTypeDefinitionOf (typeof (IReturn<>));
+		void OnOutputDataReceived (object sender, DataReceivedEventArgs e)
+		{
+			var command = commandsQueue.FirstOrDefault (c => c.Item2 == e.Data);
+			var expr = command?.Item1;
 
-				// In this case we probably dealing with IReturn or IReturnVoid
-				if (returnable == null)
-					results.Add (expr, null);
-
-				var resultType = returnable.GetGenericArguments ().FirstOrDefault ();
-				var expressionResult = (IRubyExpressionResult)Activator.CreateInstance (resultType);
-
-				var output = processResult.Output [i + 1];
-				expressionResult.Parse (output.Data);
-
-				results.Add (expr, expressionResult);
+			if (expr != null) {
+				activeCommand = expr;
+				return;
 			}
 
-			return results;
+			if (activeCommand == null)
+				return;
+
+			var commandInQueue = commandsQueue.FirstOrDefault (t => t.Item1 == activeCommand);
+			var returnable = activeCommand.GetType ().GetTypeWithGenericTypeDefinitionOf (typeof (IReturn<>));
+
+			IRubyExpressionResult expressionResult;
+			if (returnable == null) {
+				expressionResult = null;
+			} else {
+				var resultType = returnable.GetGenericArguments ().FirstOrDefault ();
+				expressionResult = (IRubyExpressionResult)Activator.CreateInstance(resultType);
+				expressionResult.Parse(e.Data);
+			}
+
+			commandsQueue.Remove (commandInQueue);
+			commandInQueue.Item3.Invoke (expressionResult);
+			activeCommand = null;
 		}
 	}
 }

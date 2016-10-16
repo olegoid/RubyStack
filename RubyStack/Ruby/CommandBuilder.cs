@@ -15,34 +15,29 @@ namespace RubyStack
 						Order);
 		}
 
-		public static Dictionary<IReturn, string> BuildCommandsForExpressions (IEnumerable<IReturn> expressions)
+		public static string BuildCommandForExpression (IReturn expression)
 		{
-			if (expressions == null)
+			if (expression == null)
 				return null;
-			
-			var expressionsAndCommands = new Dictionary<IReturn, string> ();
-			foreach (var expression in expressions) {
-				var type = expression.GetType ();
-				var expressionAttribute = (RubyExpressionAttribute)type.
-										GetCustomAttributes (typeof (RubyExpressionAttribute), true).
-										FirstOrDefault ();
 
-				if (expressionAttribute == null)
-					continue;
+			var type = expression.GetType ();
+			var expressionAttribute = (RubyExpressionAttribute)type.
+									GetCustomAttributes (typeof (RubyExpressionAttribute), true).
+									FirstOrDefault ();
 
-				var properties = GetSortedProperties (type);
-				var args = properties.Select (p => p.GetValue (expression)).ToArray ();
+			if (expressionAttribute == null)
+				return null;
 
-				var matches = Regex.Matches (expressionAttribute.Expression, @"(?<!\{)\{([0-9]+).*?\}(?!})").Cast<Match> ();
-				int? placeholdersCount = matches.Count () == 0 ? 0 : matches?.Max (m => int.Parse (m.Groups[1].Value)) + 1;
+			var properties = GetSortedProperties (type);
+			var args = properties.Select (p => p.GetValue (expression)).ToArray ();
 
-				if (!placeholdersCount.HasValue || placeholdersCount.Value != args.Count ())
-					throw new Exception ($"Number of placeholders in expression \"{expressionAttribute.Expression}\" is less than number of provided pararams - {args.Count ()}");
+			var matches = Regex.Matches (expressionAttribute.Expression, @"(?<!\{)\{([0-9]+).*?\}(?!})").Cast<Match> ();
+			int? placeholdersCount = matches.Count () == 0 ? 0 : matches?.Max (m => int.Parse (m.Groups[1].Value)) + 1;
 
-				expressionsAndCommands.Add (expression, string.Format (expressionAttribute.Expression, args));
-			}
+			if (!placeholdersCount.HasValue || placeholdersCount.Value != args.Count ())
+				throw new Exception ($"Number of placeholders in expression \"{expressionAttribute.Expression}\" is less than number of provided pararams - {args.Count ()}");
 
-			return expressionsAndCommands;
+			return string.Format (expressionAttribute.Expression, args);
 		}
 	}
 }

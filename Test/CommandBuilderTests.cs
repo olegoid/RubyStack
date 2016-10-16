@@ -1,6 +1,4 @@
-﻿using System;
-
-using RubyStack;
+﻿using RubyStack;
 using NUnit.Framework;
 
 namespace Test
@@ -56,15 +54,8 @@ namespace Test
 		[Test]
 		public void BuildCommands_NullParam ()
 		{
-			Assert.IsNull (CommandBuilder.BuildCommandsForExpressions (null),
+			Assert.IsNull (CommandBuilder.BuildCommandForExpression (null),
 					"BuildCommandsForExpressions should return null");
-		}
-
-		[Test]
-		public void BuildCommands_EmptyParam ()
-		{
-			Assert.IsTrue (CommandBuilder.BuildCommandsForExpressions (new IReturn[] { }).Count == 0,
-					"BuildCommandsForExpressions should return empty dictionary");
 		}
 
 		[Test]
@@ -73,8 +64,8 @@ namespace Test
 			string expectedCommand = "puts \"Hello World!\"";
 			var expression = new ExpressionWithoutParameters ();
 
-			var commands = CommandBuilder.BuildCommandsForExpressions (new IReturn[] { expression });
-			Assert.IsTrue (commands.Count == 1 && commands[expression] == expectedCommand,
+			var command = CommandBuilder.BuildCommandForExpression (expression);
+			Assert.IsTrue (command == expectedCommand,
 					"BuildCommandsForExpressions failed to build command for expression without params");
 		}
 
@@ -87,8 +78,8 @@ namespace Test
 				SecondParam = "Hello"
 			};
 
-			var commands = CommandBuilder.BuildCommandsForExpressions (new IReturn[] { expression });
-			Assert.IsTrue (commands.Count == 1 && commands[expression] == expectedCommand,
+			var command = CommandBuilder.BuildCommandForExpression (expression);
+			Assert.IsTrue (command == expectedCommand,
 					"BuildCommandsForExpressions failed to build command for expression with reversed params");
 		}
 
@@ -96,8 +87,8 @@ namespace Test
 		public void BuildCommands_NotAttributedExpression ()
 		{
 			var expression = new NotAttributedExpression ();
-			var commands = CommandBuilder.BuildCommandsForExpressions (new IReturn[] { expression });
-			Assert.IsTrue (commands.Count == 0,
+			var command = CommandBuilder.BuildCommandForExpression (expression);
+			Assert.IsTrue (string.IsNullOrEmpty (command),
 					"BuildCommandsForExpressions failed to build command for not attributed expression");
 		}
 
@@ -110,8 +101,8 @@ namespace Test
 				FourthParam = "World!"
 			};
 
-			var commands = CommandBuilder.BuildCommandsForExpressions (new IReturn[] { expression });
-			Assert.IsTrue (commands.Count == 1 && commands[expression] == expectedCommand,
+			var command = CommandBuilder.BuildCommandForExpression (expression);
+			Assert.IsTrue (command == expectedCommand,
 					"BuildCommandsForExpressions failed to build command for not farfetched expression");
 		}
 
@@ -124,8 +115,8 @@ namespace Test
 				SecondParam = "World!"
 			};
 
-			var commands = CommandBuilder.BuildCommandsForExpressions (new IReturn[] { expression });
-			Assert.IsTrue (commands.Count == 1 && commands[expression] == expectedCommand,
+			var command = CommandBuilder.BuildCommandForExpression (expression);
+			Assert.IsTrue (command == expectedCommand,
 					"BuildCommandsForExpressions failed to build command for expression with correct order of params");
 		}
 	}
