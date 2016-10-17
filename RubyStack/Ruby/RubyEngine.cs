@@ -25,23 +25,19 @@ namespace RubyStack
 
 		public async Task<T> Run<T> (IReturn expression) where T : IRubyExpressionResult
 		{
-			try {
-				var taskCompletionSource = new TaskCompletionSource<IRubyExpressionResult> ();
-				var task = taskCompletionSource.Task;
-				Action<IRubyExpressionResult> callback = taskCompletionSource.SetResult;
+			var taskCompletionSource = new TaskCompletionSource<IRubyExpressionResult> ();
+			var task = taskCompletionSource.Task;
+			Action<IRubyExpressionResult> callback = taskCompletionSource.SetResult;
 
-				await Task.Factory.StartNew (() => {
-					try {
-						Run (expression, callback);
-					} catch (Exception exception) {
-						taskCompletionSource.SetException (exception);
-					}
-				}, TaskCreationOptions.AttachedToParent);
+			await Task.Factory.StartNew (() => {
+				try {
+					Run (expression, callback);
+				} catch (Exception exception) {
+					taskCompletionSource.SetException (exception);
+				}
+			}, TaskCreationOptions.AttachedToParent);
 
-				return await Task.FromResult ((T)task.Result);
-			} catch {
-				return default (T);
-			}
+			return await Task.FromResult ((T)task.Result);
 		}
 
 		void Run (IReturn expression, Action<IRubyExpressionResult> callback)
@@ -49,10 +45,9 @@ namespace RubyStack
 			var command = CommandBuilder.BuildCommandForExpression (expression);
 			commandsQueue.Add (new Tuple<IReturn, string, Action<IRubyExpressionResult>> (expression, command, callback));
 
-			using (StreamWriter sw = irbProcess.StandardInput) {
-				if (sw.BaseStream.CanWrite)
-					sw.WriteLine (command);
-			}
+			StreamWriter sw = irbProcess.StandardInput;
+			if (sw.BaseStream.CanWrite)
+				sw.WriteLine (command);
 		}
 
 		void StartEngine (string pathToExecEngine)
