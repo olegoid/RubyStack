@@ -6,7 +6,7 @@ namespace RubyStack
 	{
 		public static Type GetTypeWithGenericTypeDefinitionOf (this Type type, Type genericTypeDefinition)
 		{
-			Type[] typeInterfaces = type.GetTypeInterfaces ();
+			var typeInterfaces = type.GetTypeInterfaces ();
 			for (int i = 0; i < typeInterfaces.Length; i++) {
 				Type type2 = typeInterfaces[i];
 
@@ -14,7 +14,7 @@ namespace RubyStack
 					return type2;
 			}
 
-			Type type3 = type.FirstGenericType ();
+			var type3 = type.FirstGenericType ();
 			if (type3 != null && type3.GetGenericTypeDefinition () == genericTypeDefinition)
 				return type3;
 
