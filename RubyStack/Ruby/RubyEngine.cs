@@ -14,15 +14,23 @@ namespace RubyStack
 		Process irbProcess;
 		IReturn activeCommand;
 
-		public RubyEngine (string pathToExecEngine = "")
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:RubyStack.RubyEngine"/> class.
+		/// </summary>
+		/// <param name="irbPath">Path to irb executable.</param>
+		public RubyEngine (string irbPath = "")
 		{
-			if (string.IsNullOrEmpty (pathToExecEngine))
-				pathToExecEngine = "/usr/bin/irb";
+			if (string.IsNullOrEmpty (irbPath))
+				irbPath = "/usr/bin/irb";
 
 			commandsQueue = new List<Tuple<IReturn, string, Action<IRubyExpressionResult>>> ();
-			StartEngine (pathToExecEngine);
+			StartEngine (irbPath);
 		}
 
+		/// <summary>
+		/// Run the specified expression asynchronously.
+		/// </summary>
+		/// <returns>Expression result.</returns>
 		public async Task<T> Run<T> (IReturn expression) where T : IRubyExpressionResult
 		{
 			var taskCompletionSource = new TaskCompletionSource<IRubyExpressionResult> ();
@@ -38,6 +46,14 @@ namespace RubyStack
 			}, TaskCreationOptions.AttachedToParent);
 
 			return await Task.FromResult ((T)task.Result);
+		}
+
+		/// <summary>
+		/// Terminate irb session.
+		/// </summary>
+		public void Terminate ()
+		{
+			irbProcess?.Kill ();
 		}
 
 		void Run (IReturn expression, Action<IRubyExpressionResult> callback)
@@ -70,11 +86,6 @@ namespace RubyStack
 			irbProcess.BeginOutputReadLine ();
 		}
 
-		public void Terminate ()
-		{
-			irbProcess.Kill ();
-		}
-
 		void OnOutputDataReceived (object sender, DataReceivedEventArgs e)
 		{
 			var command = commandsQueue.FirstOrDefault (c => c.Item2 == e.Data);
@@ -96,8 +107,8 @@ namespace RubyStack
 				expressionResult = null;
 			} else {
 				var resultType = returnable.GetGenericArguments ().FirstOrDefault ();
-				expressionResult = (IRubyExpressionResult)Activator.CreateInstance(resultType);
-				expressionResult.Parse(e.Data);
+				expressionResult = (IRubyExpressionResult)Activator.CreateInstance (resultType);
+				expressionResult.Parse (e.Data);
 			}
 
 			commandsQueue.Remove (commandInQueue);

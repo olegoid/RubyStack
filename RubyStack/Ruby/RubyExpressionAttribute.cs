@@ -2,6 +2,9 @@ using System;
 
 namespace RubyStack
 {
+	/// <summary>
+	/// Ruby expression attribute. Usually contains ruby statement.
+	/// </summary>
 	[AttributeUsage (AttributeTargets.Class)]
 	public class RubyExpressionAttribute : Attribute
 	{
