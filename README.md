@@ -1,6 +1,6 @@
 ## RubyStack
 
-Helper library intendent to help C# developers to effectively communicate with `irb` using DTOs.
+Library intendent to help C# developers to effectively communicate with `irb` using DTOs.
 
 ## Get started
 
