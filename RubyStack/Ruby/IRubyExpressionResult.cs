@@ -2,7 +2,7 @@ namespace RubyStack
 {
 	public interface IRubyExpressionResult
 	{
-		bool Parse (string s);
+		void Parse (string s);
 	}
 
 	public interface IRubyExpressionResult<T> : IRubyExpressionResult
